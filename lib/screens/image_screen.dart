@@ -1,50 +1,44 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/model.dart';
 import 'package:http/http.dart' as http;
 
-class ImageScreen extends StatelessWidget {
+import '../services/services.dart';
+
+final getprovider = FutureProvider(
+  (ref) async {
+    return ref.read(apiprovider).getdata();
+  },
+);
+
+class ImageScreen extends ConsumerStatefulWidget {
   const ImageScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Future<Movie> getdata() async {
-      final response = await http
-          .get(Uri.parse('https://imdb-api.com/en/API/ComingSoon/k_8v6h59og'));
-      var data = jsonDecode(response.body.toString());
-      if (response.statusCode == 200) {
-        return Movie.fromJson(data);
-      } else {
-        return Movie.fromJson(data);
-      }
-    }
+  ConsumerState<ConsumerStatefulWidget> createState() => _ImageScreenState();
+}
 
+class _ImageScreenState extends ConsumerState<ImageScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final data = ref.watch(getprovider);
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder(
-              future: getdata(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.items.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Image.network(
-                            snapshot.data!.items[index].image.toString()),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          )
-        ],
+      body: data.when(
+        data: (data) {
+          return ListView.builder(
+            itemCount: data.items.length,
+            itemBuilder: (context, index) {
+              return Card(
+                child: Image.network(data.items[index].image.toString()),
+              );
+            },
+          );
+        },
+        error: (error, stackTrace) => Text(error.toString()),
+        loading: () => Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }

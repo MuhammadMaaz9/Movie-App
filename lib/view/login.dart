@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movieapp/screens/homescreen.dart';
+import 'package:movieapp/view/homescreen.dart';
 
 class Login extends ConsumerWidget {
   const Login({super.key});

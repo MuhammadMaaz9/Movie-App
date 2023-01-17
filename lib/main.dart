@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movieapp/screens/splashscreen.dart';
+import 'package:movieapp/providers/api_provider.dart';
+import 'package:movieapp/view/splashscreen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const ProviderScope(child: App()));
+  runApp(App());
 }
 
 class App extends StatelessWidget {
@@ -11,9 +12,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return ChangeNotifierProvider(
+      create: (context) => ApiProvider(),
+      child: MaterialApp(
+        home: SplashScreen(),
+      ),
     );
   }
 }
